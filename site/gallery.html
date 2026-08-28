@@ -1597,7 +1597,7 @@ img,svg{max-width:100%;display:block;}
         /* 한 바퀴에 고르게 — 어디를 돌려 봐도 같은 밀도라 끊긴 자리가 없다 */
         au[k] = (k / AN) * TAU + (Math.random() - 0.5) * (TAU / AN) * 1.6;
         aj[k] = (Math.random() - 0.5) * 0.016;          /* 반지름 흔들림 */
-        asz[k] = 0.5 + Math.random() * Math.random() * 1.2;   /* 작은 알갱이가 많다 */
+        asz[k] = 0.62 + Math.random() * Math.random() * 1.5;  /* 작은 알갱이가 많다 */
 
         /* 알갱이마다 흔들리는 빠르기와 폭이 다르다.
            주파수가 서로 어긋나 있어야 덩어리로 안 움직이고 물속처럼 보인다. */
@@ -1627,8 +1627,8 @@ img,svg{max-width:100%;display:block;}
            뒤처져 벌어지고, 멈추면 모두 제자리로 모인다 — 물속에서 끌려가듯.
            코어는 빠르게 따라가 선이 흐려지지 않게 한다. */
         var far = Math.min(1, atb[k] / 0.18);           /* 0 코어 … 1 바깥 가닥 */
-        alag[k] = 0.25 - far * 0.17 + (Math.random() - 0.5) * 0.10;
-        if(alag[k] < 0.045) alag[k] = 0.045;
+        alag[k] = 0.32 - far * 0.24 + (Math.random() - 0.5) * 0.13;
+        if(alag[k] < 0.035) alag[k] = 0.035;
       }
     }
 
@@ -1705,7 +1705,7 @@ img,svg{max-width:100%;display:block;}
         var grow = disp + ambient * 0.26; if(grow > 1) grow = 1;
         var hb = (heat * HEATS) | 0; if(hb > HEATS - 1) hb = HEATS - 1;
         bkt[i] = (z[i] < 0.38 ? HEATS : 0) + hb;
-        rad[i] = (1.30 + z[i] * 2.90) * (1 + grow * 1.05)
+        rad[i] = (1.10 + z[i] * 2.40) * (1 + grow * 1.05)
                * (0.88 + 0.12 * Math.sin(t * tws[i] + twp[i]));
         var yy = y[i] + par;
         yy = ((yy + MARGIN) % SH + SH) % SH - MARGIN;
@@ -1776,10 +1776,10 @@ img,svg{max-width:100%;display:block;}
         var lit, sz;
         if(ahu[i] === 0){                                  /* 코어 — 또렷한 선 */
           lit = 0.64 + front * 0.16 + push2;
-          sz  = 1.9 + front * 1.1;
+          sz  = 2.3 + front * 1.4;
         }else{                                             /* 감는 가닥 */
           lit = 0.32 + front * 0.44 + push2;
-          sz  = 1.6 + front * 2.4;
+          sz  = 2.0 + front * 2.9;
         }
         if(lit < 0) lit = 0; else if(lit > 1) lit = 1;
         var ahb = (lit * ALV) | 0; if(ahb > ALV - 1) ahb = ALV - 1;
@@ -1794,7 +1794,7 @@ img,svg{max-width:100%;display:block;}
     function start(){ if(raf === null) raf = requestAnimationFrame(step); }
     function stop(){ if(raf !== null){ cancelAnimationFrame(raf); raf = null; } qPrev = 0; }
     function resting(){
-      for(var i = 0; i < N; i++){ bkt[i] = z[i] < 0.38 ? HEATS : 0; rad[i] = 1.30 + z[i] * 2.90; }
+      for(var i = 0; i < N; i++){ bkt[i] = z[i] < 0.38 ? HEATS : 0; rad[i] = 1.10 + z[i] * 2.40; }
       /* 움직임을 껐을 때도 지금 스크롤만큼 돌아 있어야 튀지 않는다 */
       var rrot = rotNow === null ? window.scrollY / (W * 0.60 * 2.2) : rotNow;
       var RA = W * 0.60;
@@ -1808,7 +1808,7 @@ img,svg{max-width:100%;display:block;}
         apy[k] = H * 0.5 + RA + Math.sin(ra) * rr + Math.sin(adp[k] * 1.9) * adam[k] * 0.82;
         var lit = ahu[k] === 0 ? 0.64 + front * 0.16 : 0.32 + front * 0.44;
         abk[k] = Math.min(ALV - 1, (lit * ALV) | 0);
-        arad[k] = (ahu[k] === 0 ? 1.9 + front * 1.1 : 1.6 + front * 2.4) * asz[k];
+        arad[k] = (ahu[k] === 0 ? 2.3 + front * 1.4 : 2.0 + front * 2.9) * asz[k];
       }
       aSeeded = true;
       paint();
