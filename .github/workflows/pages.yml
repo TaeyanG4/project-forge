@@ -1,0 +1,56 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포는 한 번에 하나만. 밀린 것은 취소한다.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # 공개할 파일을 하나씩 지정한다.
+      # 폴더째 올리면 편집 도구가 딸려 나갈 수 있어서 일부러 열거한다.
+      - name: 공개 파일만 모으기
+        run: |
+          mkdir -p _public
+          cp site/index.html   _public/
+          cp site/gallery.html _public/
+          cp site/pallet.html  _public/
+          cp site/robots.txt   _public/
+          cp site/sitemap.xml  _public/
+          touch _public/.nojekyll
+          echo "--- 배포될 파일 ---"
+          ls -la _public
+
+      - name: 편집 도구가 섞이지 않았는지 확인
+        run: |
+          for f in admin.html apply.py site-data.json; do
+            if [ -e "_public/$f" ]; then
+              echo "::error::$f 가 배포 대상에 들어 있습니다. 인증이 없는 파일이라 공개되면 안 됩니다."
+              exit 1
+            fi
+          done
+          echo "확인 완료"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _public
+      - id: deployment
+        uses: actions/deploy-pages@v4

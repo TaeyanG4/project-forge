@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://taeyang4.github.io/project-forge/sitemap.xml

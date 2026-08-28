@@ -1,0 +1,5 @@
+# 줄바꿈을 저장소 안에서는 LF 로 통일한다 (워크플로 YAML 이 깨지지 않도록)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
