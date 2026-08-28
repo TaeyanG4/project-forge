@@ -40,7 +40,7 @@
   --glow:rgba(255,176,32,.22);
   --motif:rgba(244,246,250,.16);
   --plate-bg:#0D0F15;
-  --scrim:rgba(8,9,13,.76); --scrim-2:rgba(8,9,13,.94);
+  --scrim:rgba(8,9,13,.76); --scrim-2:rgba(8,9,13,.985);
   --sheen:rgba(244,246,250,.07);
   --spectrum:linear-gradient(90deg,#FFB020 0%,#FF8A2B 18%,#FF6B35 34%,#E8467C 54%,#A855F7 76%,#3B9EFF 100%);
   --shadow-md:0 18px 44px -18px rgba(0,0,0,.9);
@@ -60,7 +60,7 @@
     --glow:rgba(143,84,0,.14);
     --motif:rgba(18,22,29,.15);
     --plate-bg:#D5DAE3;
-    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.96); --scrim-2:rgba(221,225,232,.96);
+    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.985); --scrim-2:rgba(221,225,232,.985);
     --sheen:rgba(18,22,29,.055);
     --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
     --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -76,7 +76,7 @@
   --glow:rgba(143,84,0,.14);
   --motif:rgba(18,22,29,.15);
   --plate-bg:#D5DAE3;
-  --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.96);
+  --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.985);
   --sheen:rgba(18,22,29,.055);
   --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
   --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -1590,7 +1590,7 @@ img,svg{max-width:100%;display:block;}
       /* 가닥마다 코어에서 떨어진 거리가 다르다 — 두께가 다채로워진다.
          안쪽은 촘촘하고 바깥으로 갈수록 성글게 흩어진다. */
       var TUBR = [0.035, 0.061, 0.091, 0.126, 0.170];
-      var SHARE = [0.28, 0.19, 0.17, 0.15, 0.12, 0.09];   /* 코어, 가닥1..5 */
+      var SHARE = [0.15, 0.22, 0.20, 0.18, 0.14, 0.11];   /* 코어, 가닥1..5 */
       var cut = [], acc = 0;
       for(var q = 0; q < SHARE.length; q++){ acc += SHARE[q]; cut.push(acc); }
 
@@ -1614,9 +1614,11 @@ img,svg{max-width:100%;display:block;}
         while(g < cut.length - 1 && r > cut[g]) g++;
         ahu[k] = g;
         if(g === 0){                                    /* 코어 — 선 위에 붙는다 */
-          atb[k] = Math.random() * 0.009;
+          /* 좁은 폭에 많이 몰아넣으면 선이 아니라 밧줄처럼 뭉친다.
+             수를 줄이고 폭을 벌려 성글게 흩는다. */
+          atb[k] = Math.random() * Math.random() * 0.028;
           aph[k] = Math.random() * TAU;
-          adam[k] *= 0.45;                              /* 코어는 덜 흔들려 선을 지킨다 */
+          adam[k] *= 0.6;                               /* 코어는 덜 흔들려 선을 지킨다 */
         }else{                                          /* 감는 가닥 */
           atb[k] = TUBR[g - 1] * (0.74 + Math.random() * 0.52);
           aph[k] = (g - 1) * TAU / ASTR + (Math.random() - 0.5) * 0.62;
@@ -1628,8 +1630,12 @@ img,svg{max-width:100%;display:block;}
            뒤처져 벌어지고, 멈추면 모두 제자리로 모인다 — 물속에서 끌려가듯.
            코어는 빠르게 따라가 선이 흐려지지 않게 한다. */
         var far = Math.min(1, atb[k] / 0.18);           /* 0 코어 … 1 바깥 가닥 */
-        alag[k] = 0.32 - far * 0.24 + (Math.random() - 0.5) * 0.13;
-        if(alag[k] < 0.035) alag[k] = 0.035;
+        /* 고르게 흩으면 다들 비슷하게 뒤처져 결국 같이 움직인다.
+           멱분포로 치우치게 두면 대부분은 잘 따라오고 소수만 크게 뒤처진다 —
+           바닥 모래가 물살에 쓸릴 때와 같다. */
+        var slow = Math.pow(Math.random(), 2.2);
+        alag[k] = 0.44 - far * 0.18 - slow * 0.40;
+        if(alag[k] < 0.022) alag[k] = 0.022;
       }
     }
 
@@ -1776,7 +1782,7 @@ img,svg{max-width:100%;display:block;}
         var push2 = Math.sqrt(ox*ox + oy*oy) / 46 * 0.5;
         var lit, sz;
         if(ahu[i] === 0){                                  /* 코어 — 또렷한 선 */
-          lit = 0.64 + front * 0.16 + push2;
+          lit = 0.68 + front * 0.16 + push2;
           sz  = 2.3 + front * 1.4;
         }else{                                             /* 감는 가닥 */
           lit = 0.32 + front * 0.44 + push2;
@@ -1807,7 +1813,7 @@ img,svg{max-width:100%;display:block;}
         var ra = au[k] + rrot;
         apx[k] = W * 0.5 + Math.cos(ra) * rr + Math.sin(adp[k]) * adam[k];
         apy[k] = H * 0.5 + RA + Math.sin(ra) * rr + Math.sin(adp[k] * 1.9) * adam[k] * 0.82;
-        var lit = ahu[k] === 0 ? 0.64 + front * 0.16 : 0.32 + front * 0.44;
+        var lit = ahu[k] === 0 ? 0.68 + front * 0.16 : 0.32 + front * 0.44;
         abk[k] = Math.min(ALV - 1, (lit * ALV) | 0);
         arad[k] = (ahu[k] === 0 ? 2.3 + front * 1.4 : 2.0 + front * 2.9) * asz[k];
       }
