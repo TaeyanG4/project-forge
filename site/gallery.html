@@ -40,7 +40,7 @@
   --glow:rgba(255,176,32,.22);
   --motif:rgba(244,246,250,.16);
   --plate-bg:#0D0F15;
-  --scrim:rgba(8,9,13,.76); --scrim-2:rgba(8,9,13,.985);
+  --scrim:rgba(8,9,13,.76); --scrim-2:rgba(8,9,13,.52);
   --sheen:rgba(244,246,250,.07);
   --spectrum:linear-gradient(90deg,#FFB020 0%,#FF8A2B 18%,#FF6B35 34%,#E8467C 54%,#A855F7 76%,#3B9EFF 100%);
   --shadow-md:0 18px 44px -18px rgba(0,0,0,.9);
@@ -60,7 +60,7 @@
     --glow:rgba(143,84,0,.14);
     --motif:rgba(18,22,29,.15);
     --plate-bg:#D5DAE3;
-    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.985); --scrim-2:rgba(221,225,232,.985);
+    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.58); --scrim-2:rgba(221,225,232,.58);
     --sheen:rgba(18,22,29,.055);
     --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
     --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -76,7 +76,7 @@
   --glow:rgba(143,84,0,.14);
   --motif:rgba(18,22,29,.15);
   --plate-bg:#D5DAE3;
-  --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.985);
+  --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.58);
   --sheen:rgba(18,22,29,.055);
   --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
   --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -146,8 +146,10 @@ img,svg{max-width:100%;display:block;}
 .head__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px;}
 
 /* 분야 이동 */
-/* 분야 단추 위로 입자가 지나가 글자가 읽히지 않았다. 내비보다 더 덮는다. */
-.jump{position:sticky;top:74px;z-index:50;background:var(--scrim-2);backdrop-filter:blur(14px);
+/* 입자가 비쳐 보이도록 내비보다 옅게 깐다.
+   대신 뒤를 더 흐려 두어 글자는 읽힌다 — 덮는 대신 번지게 하는 쪽. */
+.jump{position:sticky;top:74px;z-index:50;background:var(--scrim-2);
+  backdrop-filter:blur(22px) saturate(135%);
   border-block:1px solid var(--line);padding-block:14px;}
 .jump__in{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
 .jump button{
