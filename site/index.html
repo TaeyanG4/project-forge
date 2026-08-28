@@ -1836,7 +1836,7 @@ input[type=range]::-moz-range-thumb{
         "p1": "rgba(59,158,255,.55)",
         "p2": "rgba(52,211,153,.36)"
       },
-      "featured": false
+      "featured": true
     },
     {
       "cat": "ai",
@@ -1885,7 +1885,7 @@ input[type=range]::-moz-range-thumb{
         "p1": "rgba(255,176,32,.48)",
         "p2": "rgba(232,70,124,.48)"
       },
-      "featured": false
+      "featured": true
     },
     {
       "cat": "internal",
@@ -1910,7 +1910,7 @@ input[type=range]::-moz-range-thumb{
         "p1": "rgba(255,176,32,.48)",
         "p2": "rgba(232,70,124,.42)"
       },
-      "featured": false
+      "featured": true
     },
     {
       "cat": "internal",
@@ -1935,7 +1935,7 @@ input[type=range]::-moz-range-thumb{
         "p1": "rgba(232,70,124,.5)",
         "p2": "rgba(59,158,255,.46)"
       },
-      "featured": false
+      "featured": true
     },
     {
       "cat": "product",
@@ -1959,7 +1959,7 @@ input[type=range]::-moz-range-thumb{
         "p1": "rgba(255,176,32,.5)",
         "p2": "rgba(168,85,247,.38)"
       },
-      "featured": false
+      "featured": true
     }
   ],
   "gallery": {
@@ -2273,8 +2273,11 @@ input[type=range]::-moz-range-thumb{
       feed.appendChild(card);
     });
 
-    /* 더보기 — 견본실로 */
-    if(all.length > works.length && DATA.gallery){
+    /* 더보기 — 견본실로.
+       예전에는 대표보다 전체가 많을 때만 띄웠다. 그래서 전부를 대표로 고르면
+       견본실로 가는 길이 통째로 사라졌다. 견본실은 '메인에 못 실린 나머지'가
+       아니라 분야별로 모아 보는 별개의 자리이므로 언제나 둔다. */
+    if(DATA.gallery){
       var more = document.createElement("a");
       more.className = "feed__more";
       more.href = DATA.gallery.url;
