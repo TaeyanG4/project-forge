@@ -52,3 +52,6 @@ desktop.ini
 node_modules/
 dist/
 .cache/
+
+# 로컬 미리보기 설정
+.claude/
