@@ -97,8 +97,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         try:
             n = int(self.headers.get("Content-Length") or 0)
             payload = json.loads(self.rfile.read(n) or b"{}")
-        except Exception:
-            payload = {}
+        except Exception as e:
+            # 조용히 기본 메시지로 커밋해 버리면 무엇이 올라갔는지 알 수 없다
+            return self.reply(400, {"ok": False, "step": "body",
+                                    "error": "요청을 읽지 못했습니다 (%s). "
+                                             "UTF-8 JSON 이어야 합니다." % type(e).__name__})
         msg = str(payload.get("message") or "").strip() or "견본 등록"
         msg = msg.replace("\r", " ").replace("\n", " ")[:120]
 
