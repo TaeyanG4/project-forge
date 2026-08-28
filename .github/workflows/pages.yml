@@ -40,7 +40,7 @@ jobs:
 
       - name: 편집 도구가 섞이지 않았는지 확인
         run: |
-          for f in admin.html apply.py site-data.json; do
+          for f in admin.html apply.py publish.py site-data.json; do
             if [ -e "_public/$f" ]; then
               echo "::error::$f 가 배포 대상에 들어 있습니다. 인증이 없는 파일이라 공개되면 안 됩니다."
               exit 1
