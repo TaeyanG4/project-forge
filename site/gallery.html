@@ -49,23 +49,9 @@
   --f-body:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
 }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    --ground:#DDE1E8; --ground-2:#D0D5DE; --surface:#EBEEF3; --surface-2:#E1E6EE;
-    --line:#C9D0DB; --line-2:#A8B2C2;
-    --ink:#12161D; --ink-2:#454E5E; --ink-3:#6C7686;
-    --straw:#8F5400; --straw-hi:#734300; --bronze:#B23A10; --plum:#96206F; --violet:#6428C8; --tblue:#12569F;
-    --ok:#0A7A55;
-    --on-accent:#FFFFFF;
-    --glow:rgba(143,84,0,.14);
-    --motif:rgba(18,22,29,.15);
-    --plate-bg:#D5DAE3;
-    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.40); --scrim-2:rgba(221,225,232,.40);
-    --sheen:rgba(18,22,29,.055);
-    --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
-    --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
-  }
-}
+/* 기본은 다크다. 예전에는 운영체제가 라이트면 따라갔는데(prefers-color-scheme),
+   그러면 '기본 테마'가 보는 사람마다 달라진다. 라이트는 토글로만 켜지고
+   고른 값은 기억한다. */
 :root[data-theme="light"]{
   --ground:#DDE1E8; --ground-2:#D0D5DE; --surface:#EBEEF3; --surface-2:#E1E6EE;
   --line:#C9D0DB; --line-2:#A8B2C2;
@@ -869,7 +855,7 @@ img,svg{max-width:100%;display:block;}
   }catch(e){}
   document.getElementById("themeBtn").addEventListener("click", function(){
     var cur = root.getAttribute("data-theme");
-    if(!cur) cur = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    if(!cur) cur = "dark";     /* 기본이 다크다 — 운영체제는 묻지 않는다 */
     var next = cur === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     try{ localStorage.setItem("forge-theme", next); }catch(e){}
@@ -1864,8 +1850,6 @@ img,svg{max-width:100%;display:block;}
     });
     new MutationObserver(function(){ buildRamp(); if(reduce) resting(); })
       .observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
-    var mqL = window.matchMedia("(prefers-color-scheme: light)");
-    if(mqL.addEventListener) mqL.addEventListener("change", function(){ buildRamp(); if(reduce) resting(); });
   })();
 
   var queued = false;
