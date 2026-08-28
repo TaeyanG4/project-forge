@@ -145,13 +145,26 @@ img,svg{max-width:100%;display:block;}
   border-block:1px solid var(--line);padding-block:14px;}
 .jump__in{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
 .jump button{
-  font-family:var(--f-body);font-size:14.5px;font-weight:600;letter-spacing:-.012em;cursor:pointer;
-  padding:11px 18px;border-radius:100px;border:1px solid var(--line);
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--f-body);font-size:14.5px;font-weight:600;letter-spacing:-.014em;cursor:pointer;
+  padding:9px 10px 9px 18px;border-radius:100px;border:1px solid var(--line);
   background:transparent;color:var(--ink-2);
-  transition:color .2s,border-color .2s,background .2s;}
+  transition:color .2s,border-color .2s,background .2s,box-shadow .2s;}
 .jump button:hover{color:var(--ink);border-color:var(--line-2);}
-.jump button[aria-current="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink);}
-.chip__n{opacity:.5;margin-left:7px;}
+.jump button:hover .chip__n{color:var(--ink-2);border-color:var(--line-2);}
+.jump button[aria-current="true"]{
+  color:var(--straw);border-color:var(--straw);
+  background:var(--surface);
+  background:color-mix(in oklab, var(--straw) 11%, transparent);
+  box-shadow:inset 0 0 0 1px var(--straw);}
+.jump button[aria-current="true"] .chip__n{background:var(--straw);border-color:var(--straw);color:var(--on-accent);}
+.chip__n{
+  display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 7px;
+  border-radius:100px;background:var(--surface-2);border:1px solid var(--line);
+  font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;line-height:1;
+  transition:background .2s ease,color .2s ease,border-color .2s ease;
+}
 .jump span{margin-left:auto;font-size:14px;color:var(--ink-3);}
 
 /* 분야 묶음 */
