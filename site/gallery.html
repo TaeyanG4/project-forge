@@ -1389,7 +1389,7 @@ img,svg{max-width:100%;display:block;}
     var ctx = cv.getContext("2d");
     if(!ctx) return;
 
-    var TAU = Math.PI * 2;
+    var TAU = Math.PI * 2, PI = Math.PI;
     var MARGIN = 40;
     var K = 0.022, DAMP = 0.86, FORCE = 2.9;      /* 성운 */
     var AK = 0.030, ADAMP = 0.862, AFORCE = 6.0;  /* 반원 */
@@ -1399,6 +1399,8 @@ img,svg{max-width:100%;display:block;}
     var au, ab, aj, asz, apx, apy, avx, avy, arad, abk, aSeeded = false;
     var mx = -99999, my = -99999, tmx = -99999, tmy = -99999, moved = false;
     var HEATS = 24, TIERS = 2, ramp = [], sprites = [], SPR = 1.46;
+    var arcRamp = [], arcSpr = [];   /* 반원은 금 한 가지 색, 밝기만 다르다 */
+    var rotNow = null;               /* 실제로 그리는 각도 — 목표를 뒤따른다 */
     var t = 0, raf = null, ambient = 0, lastTs = 0;
     var quality = 1, qAcc = 0, qN = 0, qPrev = 0;
 
@@ -1477,25 +1479,39 @@ img,svg{max-width:100%;display:block;}
                     + ((0.30 + p * 0.45) * mul).toFixed(3) + ")");
         }
       }
+      /* 반원은 색을 통일한다 — 금(straw) 하나로 두고 밝기만 24단으로 나눈다.
+         끝으로 갈수록 어두워져 회전할 때 잘린 자국이 드러나지 않는다. */
+      var g0 = hex2rgb(cs.getPropertyValue("--straw"));
+      arcRamp = [];
+      for(i = 0; i < HEATS; i++){
+        var q = i / (HEATS - 1);
+        arcRamp.push("rgba(" + g0[0] + "," + g0[1] + "," + g0[2] + ","
+                     + (Math.pow(q, 1.3) * 0.92).toFixed(3) + ")");
+      }
+
       buildSprites();
     }
     /* 색마다 알갱이를 한 번만 구워 두고 그릴 땐 찍기만 한다 */
+    function bake(col){
+      var cut = col.lastIndexOf(",");
+      var head = col.slice(0, cut + 1), al = parseFloat(col.slice(cut + 1));
+      var c2 = document.createElement("canvas");
+      c2.width = c2.height = 32;
+      var g = c2.getContext("2d");
+      var grd = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grd.addColorStop(0, head + al + ")");
+      grd.addColorStop(0.55, head + al + ")");
+      grd.addColorStop(0.80, head + (al * 0.32).toFixed(3) + ")");
+      grd.addColorStop(1, head + "0)");
+      g.fillStyle = grd; g.fillRect(0, 0, 32, 32);
+      return c2;
+    }
     function buildSprites(){
+      var b;
       sprites = [];
-      for(var b = 0; b < ramp.length; b++){
-        var col = ramp[b], cut = col.lastIndexOf(",");
-        var head = col.slice(0, cut + 1), al = parseFloat(col.slice(cut + 1));
-        var c2 = document.createElement("canvas");
-        c2.width = c2.height = 32;
-        var g = c2.getContext("2d");
-        var grd = g.createRadialGradient(16, 16, 0, 16, 16, 16);
-        grd.addColorStop(0, head + al + ")");
-        grd.addColorStop(0.55, head + al + ")");
-        grd.addColorStop(0.80, head + (al * 0.32).toFixed(3) + ")");
-        grd.addColorStop(1, head + "0)");
-        g.fillStyle = grd; g.fillRect(0, 0, 32, 32);
-        sprites.push(c2);
-      }
+      for(b = 0; b < ramp.length; b++) sprites.push(bake(ramp[b]));
+      arcSpr = [];
+      for(b = 0; b < arcRamp.length; b++) arcSpr.push(bake(arcRamp[b]));
     }
 
     function viewport(){
@@ -1573,7 +1589,7 @@ img,svg{max-width:100%;display:block;}
       for(i = 0; i < ad; i++){
         hw = arad[i] * SPR;
         if(apx[i] < -hw || apx[i] > W + hw || apy[i] < -hw || apy[i] > H + hw) continue;
-        ctx.drawImage(sprites[abk[i]], apx[i] - hw, apy[i] - hw, hw + hw, hw + hw);
+        ctx.drawImage(arcSpr[abk[i]], apx[i] - hw, apy[i] - hw, hw + hw, hw + hw);
       }
       ctx.globalAlpha = 1;
     }
@@ -1640,26 +1656,27 @@ img,svg{max-width:100%;display:block;}
       /* ---- 반원 ----
          꼭대기가 화면 세로 한가운데에 오고, 양 끝은 화면 밖으로 나간다. */
       var AR = W * 0.60 * (1 + Math.sin(t * 0.5) * 0.012);   /* 아주 얕은 숨쉬기 */
-      /* 스크롤하면 반원이 통째로 기운다.
-         원을 제 중심으로 돌리면 입자가 궤도를 미끄러질 뿐 곡선은 제자리다.
-         그래서 화면 한가운데 — 반원의 꼭대기 — 를 축으로 잡고 몸통째 돌린다.
-         축이 곧 꼭대기라 위아래로 밀리지 않고 지평선처럼 기운다. */
+      /* 스크롤하면 반원이 바퀴처럼 돈다. 회전축은 제 원의 중심이다.
+         굵기와 밝기를 입자의 제자리(au)에 묶어 두었으므로, 돌면 그 무늬가
+         함께 돌아 바퀴가 구르는 것처럼 보인다. 자리는 옮기지 않는다. */
       var prog = Math.min(1, Math.max(0, sy / docH));
-      var rot = (prog - 0.5) * 1.50            /* 전체 스크롤에 걸쳐 약 ±43도 */
-              + Math.sin(t * 0.09) * 0.05;   /* 가만히 둬도 아주 느리게 숨쉰다 */
-      var arc = Math.cos(rot), ars = Math.sin(rot);
-      var pvx = W * 0.5, pvy = H * 0.5;       /* 회전축 */
+      var rotAim = (prog - 0.5) * 2.09         /* 전체 스크롤에 걸쳐 약 ±60도 */
+                 + Math.sin(t * 0.09) * 0.05;  /* 가만히 둬도 아주 느리게 숨쉰다 */
+      /* 목표 각도를 그대로 쓰면 스크롤을 확 내렸을 때 각이 순간이동하고,
+         입자 스프링이 그걸 쫓다 튕겨 나가 반원이 화면에서 사라진다.
+         바퀴는 각도가 순간이동하지 않는다 — 뒤따라 굴러가게 한다. */
+      if(rotNow === null) rotNow = rotAim;
+      rotNow += (rotAim - rotNow) * 0.045;
+      var rot = rotNow;
       var acx = W * 0.5;
       var acy = H * 0.5 + AR;
       var AKR = Math.min(200, Math.max(130, W * 0.13)), AKR2 = AKR * AKR;
 
       for(i = 0; i < AN; i++){
         var rr = AR * (1 - ab[i] + aj[i]);
-        var ang = au[i] + Math.sin(t * 0.34 + i * 0.017) * 0.006;
-        var bx = acx + Math.cos(ang) * rr - pvx;
-        var by = acy + Math.sin(ang) * rr - pvy;
-        var tx = pvx + bx * arc - by * ars;
-        var ty = pvy + bx * ars + by * arc;
+        var ang = au[i] + rot + Math.sin(t * 0.34 + i * 0.017) * 0.006;
+        var tx = acx + Math.cos(ang) * rr;
+        var ty = acy + Math.sin(ang) * rr;
         if(!aSeeded){ apx[i] = tx; apy[i] = ty; }
 
         avx[i] += (tx - apx[i]) * AK;
@@ -1674,14 +1691,18 @@ img,svg{max-width:100%;display:block;}
         avx[i] *= ADAMP; avy[i] *= ADAMP;
         apx[i] += avx[i]; apy[i] += avy[i];
 
-        /* 꼭대기(각 -90°)에 가까울수록 뜨겁고, 밀려나면 더 달아오른다 */
-        var apex = 1 - Math.abs(Math.cos(ang));
+        /* 여기서 쓰는 값은 ang(화면 각도)이 아니라 au(입자가 반원 위에서
+           원래 앉은 자리)다. 몸에 붙어 있어야 돌 때 무늬가 함께 돈다. */
+        var own = 1 - Math.abs(Math.cos(au[i]));           /* 가운데가 굵다 */
+        var edge = au[i] - PI; if(TAU - au[i] < edge) edge = TAU - au[i];
+        var fade = edge < 0.42 ? edge / 0.42 : 1;          /* 양 끝만 사그라든다 */
+        if(fade < 0) fade = 0;
         var ox = apx[i] - tx, oy = apy[i] - ty;
-        var dep = 0.20 + apex * 0.62 + Math.sqrt(ox*ox + oy*oy) / 46 * 0.5;
-        if(dep < 0) dep = 0; else if(dep > 1) dep = 1;
-        var ahb = (dep * HEATS) | 0; if(ahb > HEATS - 1) ahb = HEATS - 1;
+        var lit = fade * (0.70 + Math.sqrt(ox*ox + oy*oy) / 46 * 0.5);
+        if(lit < 0) lit = 0; else if(lit > 1) lit = 1;
+        var ahb = (lit * HEATS) | 0; if(ahb > HEATS - 1) ahb = HEATS - 1;
         abk[i] = ahb;
-        arad[i] = (2.5 + apex * 4.2) * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
+        arad[i] = (2.5 + own * 4.2) * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
       }
       aSeeded = true;
 
@@ -1692,18 +1713,21 @@ img,svg{max-width:100%;display:block;}
     function stop(){ if(raf !== null){ cancelAnimationFrame(raf); raf = null; } qPrev = 0; }
     function resting(){
       for(var i = 0; i < N; i++){ bkt[i] = z[i] < 0.38 ? HEATS : 0; rad[i] = 1.30 + z[i] * 2.90; }
+      /* 움직임을 껐을 때도 지금 스크롤만큼 돌아 있어야 튀지 않는다 */
       var rdoc = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      var rrot = (Math.min(1, Math.max(0, window.scrollY / rdoc)) - 0.5) * 1.50;
-      var rc = Math.cos(rrot), rs = Math.sin(rrot);
+      var rrot = rotNow === null
+               ? (Math.min(1, Math.max(0, window.scrollY / rdoc)) - 0.5) * 2.09
+               : rotNow;
       for(var k = 0; k < AN; k++){
         var rr = W * 0.60 * (1 - ab[k] + aj[k]);
-        var rbx = Math.cos(au[k]) * rr;
-        var rby = W * 0.60 + Math.sin(au[k]) * rr;
-        apx[k] = W * 0.5 + rbx * rc - rby * rs;
-        apy[k] = H * 0.5 + rbx * rs + rby * rc;
-        var apex = 1 - Math.abs(Math.cos(au[k]));
-        abk[k] = Math.min(HEATS - 1, ((0.20 + apex * 0.62) * HEATS) | 0);
-        arad[k] = (2.5 + apex * 4.2) * asz[k];
+        var ra = au[k] + rrot;
+        apx[k] = W * 0.5 + Math.cos(ra) * rr;
+        apy[k] = H * 0.5 + W * 0.60 + Math.sin(ra) * rr;
+        var own = 1 - Math.abs(Math.cos(au[k]));
+        var edge = au[k] - PI; if(TAU - au[k] < edge) edge = TAU - au[k];
+        var fade = edge < 0.42 ? edge / 0.42 : 1; if(fade < 0) fade = 0;
+        abk[k] = Math.min(HEATS - 1, ((fade * 0.70) * HEATS) | 0);
+        arad[k] = (2.5 + own * 4.2) * asz[k];
       }
       aSeeded = true;
       paint();

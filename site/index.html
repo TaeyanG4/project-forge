@@ -406,8 +406,15 @@ a{color:inherit;}
 /* ============================================================
    마퀴 스트립
    ============================================================ */
-/* 투명하게 두면 입자가 글자 위로 지나가 읽기 어렵다. 바탕을 채운다. */
-.strip{border-block:1px solid var(--line);background:var(--ground-2);padding-block:18px;overflow:hidden;}
+/* 반투명 — 입자가 비쳐 지나가되 글자는 읽힌다.
+   두 띠(분야·기술)가 같은 규칙을 쓰므로 함께 바뀐다.
+   color-mix 를 모르는 브라우저는 위의 불투명 값에 머문다. */
+.strip{
+  border-block:1px solid var(--line);
+  background:var(--ground-2);
+  background:color-mix(in srgb, var(--ground-2) 62%, transparent);
+  padding-block:18px;overflow:hidden;
+}
 .marquee{display:flex;width:max-content;animation:slide 48s linear infinite;}
 .marquee--rev{animation-duration:58s;}
 .strip--tech .marquee{animation-duration:40s;}
