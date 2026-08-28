@@ -39,7 +39,7 @@
   --glow:rgba(255,176,32,.22);
   --motif:rgba(244,246,250,.16);
   --plate-bg:#0D0F15;
-  --scrim:rgba(8,9,13,.76);
+  --scrim:rgba(8,9,13,.76); --scrim-2:rgba(8,9,13,.94);
   --sheen:rgba(244,246,250,.07);
   --spectrum:linear-gradient(90deg,#FFB020 0%,#FF8A2B 18%,#FF6B35 34%,#E8467C 54%,#A855F7 76%,#3B9EFF 100%);
   --shadow-md:0 18px 44px -18px rgba(0,0,0,.9);
@@ -59,7 +59,7 @@
     --glow:rgba(143,84,0,.14);
     --motif:rgba(18,22,29,.15);
     --plate-bg:#D5DAE3;
-    --scrim:rgba(221,225,232,.86);
+    --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.96); --scrim-2:rgba(221,225,232,.96);
     --sheen:rgba(18,22,29,.055);
     --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
     --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -75,7 +75,7 @@
   --glow:rgba(143,84,0,.14);
   --motif:rgba(18,22,29,.15);
   --plate-bg:#D5DAE3;
-  --scrim:rgba(221,225,232,.86);
+  --scrim:rgba(221,225,232,.86); --scrim-2:rgba(221,225,232,.96);
   --sheen:rgba(18,22,29,.055);
   --spectrum:linear-gradient(90deg,#A66000 0%,#A34E12 18%,#B23A10 34%,#96206F 54%,#6428C8 76%,#12569F 100%);
   --shadow-md:0 16px 36px -20px rgba(28,40,58,.20);
@@ -145,7 +145,8 @@ img,svg{max-width:100%;display:block;}
 .head__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px;}
 
 /* 분야 이동 */
-.jump{position:sticky;top:74px;z-index:50;background:var(--scrim);backdrop-filter:blur(14px);
+/* 분야 단추 위로 입자가 지나가 글자가 읽히지 않았다. 내비보다 더 덮는다. */
+.jump{position:sticky;top:74px;z-index:50;background:var(--scrim-2);backdrop-filter:blur(14px);
   border-block:1px solid var(--line);padding-block:14px;}
 .jump__in{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
 .jump button{
@@ -1398,6 +1399,7 @@ img,svg{max-width:100%;display:block;}
     var hx, hy, x, y, vx, vy, z, dvx, dvy, twp, tws, bkt, rad, dxp, dyp;
     var au, aj, asz, atb, aph, ahu, apx, apy, avx, avy, arad, abk, aSeeded = false;
     var adf, adp, adam;              /* 알갱이마다 제 나름의 표류 — 물속처럼 */
+    var alag, aang;                  /* 회전을 따라가는 빠르기 · 지금 따라온 각도 */
     /* 금색 코어 한 줄에 색이 다른 가닥들이 나선으로 감긴 관(管)이다.
        ASTR 가닥 + 코어 = ASPR_H 가지 색, 각 색마다 밝기 ALV 단. */
     var ASTR = 5, ASPR_H = ASTR + 1, ALV = 20;
@@ -1499,7 +1501,7 @@ img,svg{max-width:100%;display:block;}
       ];
       arcRamp = [];
       for(var hh = 0; hh < ASPR_H; hh++){
-        var c0 = hues[hh], top = hh === 0 ? 0.90 : 0.62;   /* 코어가 가장 또렷 */
+        var c0 = hues[hh], top = hh === 0 ? 0.70 : 0.62;   /* 코어가 가장 또렷 */
         for(i = 0; i < ALV; i++){
           var q = i / (ALV - 1);
           arcRamp.push("rgba(" + c0[0] + "," + c0[1] + "," + c0[2] + ","
@@ -1578,6 +1580,7 @@ img,svg{max-width:100%;display:block;}
       au = new Float32Array(AN); aj = new Float32Array(AN); asz = new Float32Array(AN);
       atb = new Float32Array(AN); aph = new Float32Array(AN); ahu = new Uint8Array(AN);
       adf = new Float32Array(AN); adp = new Float32Array(AN); adam = new Float32Array(AN);
+      alag = new Float32Array(AN); aang = new Float32Array(AN);
       apx = new Float32Array(AN); apy = new Float32Array(AN);
       avx = new Float32Array(AN); avy = new Float32Array(AN);
       arad = new Float32Array(AN); abk = new Uint8Array(AN);
@@ -1617,6 +1620,15 @@ img,svg{max-width:100%;display:block;}
           atb[k] = TUBR[g - 1] * (0.74 + Math.random() * 0.52);
           aph[k] = (g - 1) * TAU / ASTR + (Math.random() - 0.5) * 0.62;
         }
+
+        /* 돌 때 저마다 다른 거리를 간다.
+           회전 비율 자체를 다르게 주면 오래 굴릴수록 나선이 풀려 버리므로,
+           대신 '따라가는 빠르기'를 다르게 뒀다. 빨리 돌릴수록 굼뜬 놈이 더
+           뒤처져 벌어지고, 멈추면 모두 제자리로 모인다 — 물속에서 끌려가듯.
+           코어는 빠르게 따라가 선이 흐려지지 않게 한다. */
+        var far = Math.min(1, atb[k] / 0.18);           /* 0 코어 … 1 바깥 가닥 */
+        alag[k] = 0.25 - far * 0.17 + (Math.random() - 0.5) * 0.10;
+        if(alag[k] < 0.045) alag[k] = 0.045;
       }
     }
 
@@ -1731,7 +1743,9 @@ img,svg{max-width:100%;display:block;}
         var cp = Math.cos(phi), sp = Math.sin(phi);
         var front = 0.5 + 0.5 * sp;                    /* 0 뒤 … 1 앞 */
         var rr = AR * (1 + aj[i]) + atb[i] * AR * cp;
-        var ang = au[i] + rot;
+        if(!aSeeded) aang[i] = rot;
+        aang[i] += (rot - aang[i]) * alag[i];
+        var ang = au[i] + aang[i];
         /* 알갱이마다 제 빠르기로 떠다닌다. 두 축의 주기를 어긋나게 두어
            같은 자리를 맴돌지 않게 했다. 이게 없으면 그림 한 장이 통째로
            움직이는 것처럼 보인다. */
@@ -1761,7 +1775,7 @@ img,svg{max-width:100%;display:block;}
         var push2 = Math.sqrt(ox*ox + oy*oy) / 46 * 0.5;
         var lit, sz;
         if(ahu[i] === 0){                                  /* 코어 — 또렷한 선 */
-          lit = 0.78 + front * 0.16 + push2;
+          lit = 0.64 + front * 0.16 + push2;
           sz  = 1.9 + front * 1.1;
         }else{                                             /* 감는 가닥 */
           lit = 0.32 + front * 0.44 + push2;
@@ -1788,10 +1802,11 @@ img,svg{max-width:100%;display:block;}
         var phi = aph[k] + au[k] * ACOIL;
         var front = 0.5 + 0.5 * Math.sin(phi);
         var rr = RA * (1 + aj[k]) + atb[k] * RA * Math.cos(phi);
+        aang[k] = rrot;
         var ra = au[k] + rrot;
         apx[k] = W * 0.5 + Math.cos(ra) * rr + Math.sin(adp[k]) * adam[k];
         apy[k] = H * 0.5 + RA + Math.sin(ra) * rr + Math.sin(adp[k] * 1.9) * adam[k] * 0.82;
-        var lit = ahu[k] === 0 ? 0.78 + front * 0.16 : 0.32 + front * 0.44;
+        var lit = ahu[k] === 0 ? 0.64 + front * 0.16 : 0.32 + front * 0.44;
         abk[k] = Math.min(ALV - 1, (lit * ALV) | 0);
         arad[k] = (ahu[k] === 0 ? 1.9 + front * 1.1 : 1.6 + front * 2.4) * asz[k];
       }

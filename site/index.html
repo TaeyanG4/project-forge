@@ -2469,7 +2469,7 @@ input[type=range]::-moz-range-thumb{
     var SHAPES = 4;
     /* 형상마다 좌우를 번갈아 앉힌다 — 한쪽에만 붙어 있지 않도록 */
     var SIDE_X = [0.70, 0.28, 0.72, 0.30];
-    var SIDE_Y = [0.42, 0.50, 0.40, 0.48];
+    var SIDE_Y = [0.42, 0.50, 0.56, 0.48];   /* 3번째는 제목과 겹쳐 아래로 내렸다 */
     var KN = 0, shx, shy, shz;                   /* 형상별 원본 좌표 (SHAPES × KN) */
     var kx, ky, kr, kb, ksz;                     /* 화면 좌표 / 반지름 / 색버킷 / 크기 편차 */
     var kpx, kpy, kvx, kvy, kSeeded = false;     /* 물리 상태 */
