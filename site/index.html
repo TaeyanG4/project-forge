@@ -2233,9 +2233,14 @@ input[type=range]::-moz-range-thumb{
     var feed = document.getElementById("feed"), chips = document.getElementById("chips");
     if(!feed || !chips) return;
     var all = DATA.works || [];
-    /* 대표만 앞에 세운다. 전부는 견본실에서 본다. */
+    /* 대표만 앞에 세운다. 전부는 견본실에서 본다.
+       어느 것을 세울지는 편집기에서 고른다. 열 개까지만 싣는다 —
+       더 늘면 첫 화면이 목록이 되어 버려서 견본실과 구분이 사라진다.
+       고른 것이 없으면 앞에서부터 열 개를 쓴다. */
+    var FEED_MAX = 10;
     var works = all.filter(function(w){ return w.featured; });
     if(!works.length) works = all;
+    if(works.length > FEED_MAX) works = works.slice(0, FEED_MAX);
 
     works.forEach(function(w){
       var art = w.art || {};
@@ -2306,7 +2311,7 @@ input[type=range]::-moz-range-thumb{
       more.className = "feed__more";
       more.href = DATA.gallery.url;
       more.appendChild(document.createTextNode(
-        DATA.gallery.label + "에서 " + all.length + "건 전부 보기"));
+        DATA.gallery.label + "에서 전부 보기"));
       more.insertAdjacentHTML("beforeend",
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>');
       feed.parentNode.appendChild(more);
