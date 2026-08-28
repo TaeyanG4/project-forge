@@ -105,7 +105,9 @@ img,svg{max-width:100%;display:block;}
 .nav{position:sticky;top:0;z-index:60;background:var(--scrim);backdrop-filter:blur(16px) saturate(160%);
   border-bottom:1px solid transparent;transition:border-color .3s ease;}
 .nav[data-stuck="true"]{border-bottom-color:var(--line);}
-.nav__in{display:flex;align-items:center;gap:20px;height:74px;}
+.nav__in{display:flex;align-items:center;gap:16px;height:74px;}
+.nav__links{display:flex;gap:2px;align-items:center;}
+.nav__tools{display:flex;align-items:center;gap:8px;}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;margin-right:auto;}
 .brand__mark{width:27px;height:27px;flex:none;border-radius:var(--r-sm);background:var(--spectrum);position:relative;}
 .brand__mark::after{content:"";position:absolute;inset:5px 5px 5px 9px;border-radius:2px;background:var(--ground);}
@@ -372,6 +374,8 @@ img,svg{max-width:100%;display:block;}
 }
 @media (max-width:520px){ .chat{right:16px;bottom:16px;} }
 
+@media (max-width:820px){ .nav__links{display:none;} }
+
 [data-reveal]{opacity:0;transform:translateY(18px);}
 [data-reveal].in{opacity:1;transform:none;
   transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1);}
@@ -401,24 +405,28 @@ img,svg{max-width:100%;display:block;}
       <span class="brand__mark" aria-hidden="true"></span>
       <span class="brand__txt">FORGE</span>
     </a>
-    <a class="nav__link" href="index.html#builds">작업 목록</a>
-    <a class="nav__link" href="index.html#modes">진행 방식</a>
-    <a class="nav__link" href="index.html#estimate">예상 견적</a>
-    <button class="iconbtn" id="motionBtn" type="button" aria-pressed="false"
-              aria-label="배경 움직임 끄기" title="배경 움직임 끄기">
+    <div class="nav__links">
+      <a class="nav__link" href="index.html#builds">작업 목록</a>
+      <a class="nav__link" href="index.html#modes">진행 방식</a>
+      <a class="nav__link" href="index.html#estimate">예상 견적</a>
+    </div>
+    <div class="nav__tools">
+      <button class="iconbtn" id="motionBtn" type="button" aria-pressed="false"
+                aria-label="배경 움직임 끄기" title="배경 움직임 끄기">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="2.6"></circle>
+            <circle cx="12" cy="12" r="8.4" stroke-dasharray="3.2 3.4"></circle>
+            <path class="motion-slash" d="M4.5 19.5L19.5 4.5" style="display:none"></path>
+          </svg>
+        </button>
+        <button class="iconbtn" id="themeBtn" type="button" aria-label="밝기 전환" title="밝기 전환">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="2.6"></circle>
-          <circle cx="12" cy="12" r="8.4" stroke-dasharray="3.2 3.4"></circle>
-          <path class="motion-slash" d="M4.5 19.5L19.5 4.5" style="display:none"></path>
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.4v2.2M12 19.4v2.2M21.6 12h-2.2M4.6 12H2.4M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2"></path>
         </svg>
       </button>
-      <button class="iconbtn" id="themeBtn" type="button" aria-label="밝기 전환" title="밝기 전환">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="4.2"></circle>
-        <path d="M12 2.4v2.2M12 19.4v2.2M21.6 12h-2.2M4.6 12H2.4M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2"></path>
-      </svg>
-    </button>
-    <button class="btn btn--hot btn--sm" type="button" id="askBtn">견적 문의</button>
+      <button class="btn btn--hot btn--sm" type="button" id="askBtn">견적 문의</button>
+    </div>
   </div>
 </header>
 
@@ -1472,7 +1480,7 @@ img,svg{max-width:100%;display:block;}
       }
 
       /* 반원 — 세 겹으로 두께를 준다 */
-      AN = W < 720 ? 620 : (W < 1100 ? 1000 : 1500);
+      AN = W < 720 ? 900 : (W < 1100 ? 1500 : 2200);
       au = new Float32Array(AN); ab = new Float32Array(AN); aj = new Float32Array(AN);
       asz = new Float32Array(AN);
       apx = new Float32Array(AN); apy = new Float32Array(AN);
@@ -1563,7 +1571,7 @@ img,svg{max-width:100%;display:block;}
         var grow = disp + ambient * 0.26; if(grow > 1) grow = 1;
         var hb = (heat * HEATS) | 0; if(hb > HEATS - 1) hb = HEATS - 1;
         bkt[i] = (z[i] < 0.38 ? HEATS : 0) + hb;
-        rad[i] = (1.05 + z[i] * 2.35) * (1 + grow * 1.05)
+        rad[i] = (1.30 + z[i] * 2.90) * (1 + grow * 1.05)
                * (0.88 + 0.12 * Math.sin(t * tws[i] + twp[i]));
         var yy = y[i] + par;
         yy = ((yy + MARGIN) % SH + SH) % SH - MARGIN;
@@ -1572,9 +1580,12 @@ img,svg{max-width:100%;display:block;}
 
       /* ---- 반원 ----
          꼭대기가 화면 세로 한가운데에 오고, 양 끝은 화면 밖으로 나간다. */
-      var AR = W * 0.46 * (1 + Math.sin(t * 0.5) * 0.012);   /* 아주 얕은 숨쉬기 */
-      var acx = W * 0.5;
-      var acy = H * 0.5 + AR - sy * 0.05;                     /* 스크롤에 살짝 딸려 온다 */
+      var AR = W * 0.60 * (1 + Math.sin(t * 0.5) * 0.012);   /* 아주 얕은 숨쉬기 */
+      /* 스크롤하면 위아래로 흔들리는 대신 왼쪽에서 오른쪽으로 가로지른다.
+         진행률에 묶어 두어 아무리 길게 내려도 화면을 벗어나지 않는다. */
+      var prog = Math.min(1, Math.max(0, sy / docH));
+      var acx = W * 0.5 + (prog - 0.5) * W * 0.44;
+      var acy = H * 0.5 + AR;
       var AKR = Math.min(200, Math.max(130, W * 0.13)), AKR2 = AKR * AKR;
 
       for(i = 0; i < AN; i++){
@@ -1603,7 +1614,7 @@ img,svg{max-width:100%;display:block;}
         if(dep < 0) dep = 0; else if(dep > 1) dep = 1;
         var ahb = (dep * HEATS) | 0; if(ahb > HEATS - 1) ahb = HEATS - 1;
         abk[i] = ahb;
-        arad[i] = (1.7 + apex * 2.9) * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
+        arad[i] = (2.5 + apex * 4.2) * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
       }
       aSeeded = true;
 
@@ -1613,14 +1624,14 @@ img,svg{max-width:100%;display:block;}
     function start(){ if(raf === null) raf = requestAnimationFrame(step); }
     function stop(){ if(raf !== null){ cancelAnimationFrame(raf); raf = null; } qPrev = 0; }
     function resting(){
-      for(var i = 0; i < N; i++){ bkt[i] = z[i] < 0.38 ? HEATS : 0; rad[i] = 1.05 + z[i] * 2.35; }
+      for(var i = 0; i < N; i++){ bkt[i] = z[i] < 0.38 ? HEATS : 0; rad[i] = 1.30 + z[i] * 2.90; }
       for(var k = 0; k < AN; k++){
-        var rr = W * 0.46 * (1 - ab[k] + aj[k]);
+        var rr = W * 0.60 * (1 - ab[k] + aj[k]);
         apx[k] = W * 0.5 + Math.cos(au[k]) * rr;
-        apy[k] = H * 0.5 + W * 0.46 + Math.sin(au[k]) * rr;
+        apy[k] = H * 0.5 + W * 0.60 + Math.sin(au[k]) * rr;
         var apex = 1 - Math.abs(Math.cos(au[k]));
         abk[k] = Math.min(HEATS - 1, ((0.20 + apex * 0.62) * HEATS) | 0);
-        arad[k] = (1.7 + apex * 2.9) * asz[k];
+        arad[k] = (2.5 + apex * 4.2) * asz[k];
       }
       aSeeded = true;
       paint();
