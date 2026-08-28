@@ -601,7 +601,7 @@ img,svg{max-width:100%;display:block;}
     },
     {
       "id": "product",
-      "label": "제품 만들기"
+      "label": "제품 견본"
     },
     {
       "id": "internal",
@@ -1396,7 +1396,12 @@ img,svg{max-width:100%;display:block;}
 
     var W = 0, H = 0, N = 0, AN = 0, heatScale = 50;
     var hx, hy, x, y, vx, vy, z, dvx, dvy, twp, tws, bkt, rad, dxp, dyp;
-    var au, ab, aj, asz, apx, apy, avx, avy, arad, abk, aSeeded = false;
+    var au, aj, asz, atb, aph, ahu, apx, apy, avx, avy, arad, abk, aSeeded = false;
+    /* 반원은 금색 코어 선 하나에 색이 다른 가닥들이 나선으로 감긴 관(管)이다.
+       ASTR 가닥 + 코어 = ASPR_H 가지 색, 각 색마다 밝기 ALV 단. */
+    var ASTR = 5, ASPR_H = ASTR + 1, ALV = 20;
+    var ASPAN = 4.19;                /* 240도 — 회전해도 끝이 화면에 안 들어온다 */
+    var ACOIL = 6.5;                 /* 반원 하나를 도는 동안 감기는 횟수 */
     var mx = -99999, my = -99999, tmx = -99999, tmy = -99999, moved = false;
     var HEATS = 24, TIERS = 2, ramp = [], sprites = [], SPR = 1.46;
     var arcRamp = [], arcSpr = [];   /* 반원은 금 한 가지 색, 밝기만 다르다 */
@@ -1479,14 +1484,25 @@ img,svg{max-width:100%;display:block;}
                     + ((0.30 + p * 0.45) * mul).toFixed(3) + ")");
         }
       }
-      /* 반원은 색을 통일한다 — 금(straw) 하나로 두고 밝기만 24단으로 나눈다.
-         끝으로 갈수록 어두워져 회전할 때 잘린 자국이 드러나지 않는다. */
-      var g0 = hex2rgb(cs.getPropertyValue("--straw"));
+      /* 반원 — 금색 코어 한 줄에 담금질 색 다섯 가닥이 감긴다.
+         가닥마다 색이 하나로 고정이고, 밝기만 ALV 단으로 나눈다.
+         알갱이마다 색을 흩뿌리는 대신 '선을 감싸는 띠'로 읽히게 하려는 것이다. */
+      var hues = [
+        hex2rgb(cs.getPropertyValue("--straw")),      /* 0 — 코어 */
+        hex2rgb(cs.getPropertyValue("--tblue")),
+        hex2rgb(cs.getPropertyValue("--violet")),
+        hex2rgb(cs.getPropertyValue("--plum")),
+        hex2rgb(cs.getPropertyValue("--bronze")),
+        hex2rgb(cs.getPropertyValue("--straw-hi"))
+      ];
       arcRamp = [];
-      for(i = 0; i < HEATS; i++){
-        var q = i / (HEATS - 1);
-        arcRamp.push("rgba(" + g0[0] + "," + g0[1] + "," + g0[2] + ","
-                     + (Math.pow(q, 1.3) * 0.92).toFixed(3) + ")");
+      for(var hh = 0; hh < ASPR_H; hh++){
+        var c0 = hues[hh], top = hh === 0 ? 0.95 : 0.72;   /* 코어가 가장 또렷 */
+        for(i = 0; i < ALV; i++){
+          var q = i / (ALV - 1);
+          arcRamp.push("rgba(" + c0[0] + "," + c0[1] + "," + c0[2] + ","
+                       + (Math.pow(q, 1.25) * top).toFixed(3) + ")");
+        }
       }
 
       buildSprites();
@@ -1554,22 +1570,41 @@ img,svg{max-width:100%;display:block;}
         dxp[i] = x[i]; dyp[i] = y[i];
       }
 
-      /* 반원 — 세 겹으로 두께를 준다 */
-      AN = W < 720 ? 900 : (W < 1100 ? 1500 : 2200);
-      au = new Float32Array(AN); ab = new Float32Array(AN); aj = new Float32Array(AN);
-      asz = new Float32Array(AN);
+      /* 반원 — 코어 선 + 그 둘레를 감는 다섯 가닥 */
+      AN = W < 720 ? 1200 : (W < 1100 ? 2000 : 3000);
+      au = new Float32Array(AN); aj = new Float32Array(AN); asz = new Float32Array(AN);
+      atb = new Float32Array(AN); aph = new Float32Array(AN); ahu = new Uint8Array(AN);
       apx = new Float32Array(AN); apy = new Float32Array(AN);
       avx = new Float32Array(AN); avy = new Float32Array(AN);
       arad = new Float32Array(AN); abk = new Uint8Array(AN);
       aSeeded = false;
+
+      /* 가닥마다 코어에서 떨어진 거리가 다르다 — 두께가 다채로워진다.
+         안쪽은 촘촘하고 바깥으로 갈수록 성글게 흩어진다. */
+      var TUBR = [0.035, 0.061, 0.091, 0.126, 0.170];   /* 알갱이 수는 그대로 두고 관만 벌린다 */
+      var SHARE = [0.28, 0.19, 0.17, 0.15, 0.12, 0.09];   /* 코어, 가닥1..5 */
+      var cut = [], acc = 0;
+      for(var q = 0; q < SHARE.length; q++){ acc += SHARE[q]; cut.push(acc); }
+
       for(var k = 0; k < AN; k++){
-        /* 꼭대기 쪽에 조금 더 촘촘하게 */
         var s = k / AN;
-        var e = 0.5 - Math.cos(s * Math.PI) * 0.5;         /* 0..1, 가운데가 느리게 */
-        au[k] = Math.PI + (s * 0.72 + e * 0.28) * Math.PI; /* π ~ 2π (위쪽 반원) */
-        ab[k] = (k % 3) * 0.013;                            /* 세 겹 */
-        aj[k] = (Math.random() - 0.5) * 0.020;              /* 반지름 흔들림 */
-        asz[k] = 0.7 + Math.random() * 0.8;
+        var e = 0.5 - Math.cos(s * Math.PI) * 0.5;      /* 가운데가 느리게 → 촘촘 */
+        var frac = s * 0.55 + e * 0.45;
+        au[k] = 1.5 * Math.PI + (frac - 0.5) * ASPAN;   /* 꼭대기를 가운데 두고 240도 */
+        aj[k] = (Math.random() - 0.5) * 0.016;          /* 반지름 흔들림 */
+        asz[k] = 0.55 + Math.random() * Math.random() * 1.45;  /* 작은 알갱이가 많다 */
+
+        /* 어느 가닥에 속하나 — 순서가 아니라 난수로 골라 줄무늬가 지지 않게 */
+        var r = Math.random(), g = 0;
+        while(g < cut.length - 1 && r > cut[g]) g++;
+        ahu[k] = g;
+        if(g === 0){                                    /* 코어 — 선 위에 붙는다 */
+          atb[k] = Math.random() * 0.009;
+          aph[k] = Math.random() * TAU;
+        }else{                                          /* 감는 가닥 */
+          atb[k] = TUBR[g - 1] * (0.74 + Math.random() * 0.52);
+          aph[k] = (g - 1) * TAU / ASTR + (Math.random() - 0.5) * 0.62;
+        }
       }
     }
 
@@ -1589,7 +1624,7 @@ img,svg{max-width:100%;display:block;}
       for(i = 0; i < ad; i++){
         hw = arad[i] * SPR;
         if(apx[i] < -hw || apx[i] > W + hw || apy[i] < -hw || apy[i] > H + hw) continue;
-        ctx.drawImage(arcSpr[abk[i]], apx[i] - hw, apy[i] - hw, hw + hw, hw + hw);
+        ctx.drawImage(arcSpr[ahu[i] * ALV + abk[i]], apx[i] - hw, apy[i] - hw, hw + hw, hw + hw);
       }
       ctx.globalAlpha = 1;
     }
@@ -1673,7 +1708,13 @@ img,svg{max-width:100%;display:block;}
       var AKR = Math.min(200, Math.max(130, W * 0.13)), AKR2 = AKR * AKR;
 
       for(i = 0; i < AN; i++){
-        var rr = AR * (1 - ab[i] + aj[i]);
+        /* 관 좌표: 코어 선을 따라간 자리(ang) + 그 둘레를 도는 각(phi).
+           phi 는 au 에 묶여 있어 몸을 따라 돌고, 시간에 따라 아주 천천히 감긴다.
+           화면은 평면이므로 반지름 방향은 두께로, 앞뒤는 크기·밝기로 보인다. */
+        var phi = aph[i] + au[i] * ACOIL + t * 0.10;
+        var cp = Math.cos(phi), sp = Math.sin(phi);
+        var front = 0.5 + 0.5 * sp;                    /* 0 뒤 … 1 앞 */
+        var rr = AR * (1 + aj[i]) + atb[i] * AR * cp;
         var ang = au[i] + rot + Math.sin(t * 0.34 + i * 0.017) * 0.006;
         var tx = acx + Math.cos(ang) * rr;
         var ty = acy + Math.sin(ang) * rr;
@@ -1691,18 +1732,23 @@ img,svg{max-width:100%;display:block;}
         avx[i] *= ADAMP; avy[i] *= ADAMP;
         apx[i] += avx[i]; apy[i] += avy[i];
 
-        /* 여기서 쓰는 값은 ang(화면 각도)이 아니라 au(입자가 반원 위에서
-           원래 앉은 자리)다. 몸에 붙어 있어야 돌 때 무늬가 함께 돈다. */
-        var own = 1 - Math.abs(Math.cos(au[i]));           /* 가운데가 굵다 */
-        var edge = au[i] - PI; if(TAU - au[i] < edge) edge = TAU - au[i];
-        var fade = edge < 0.42 ? edge / 0.42 : 1;          /* 양 끝만 사그라든다 */
-        if(fade < 0) fade = 0;
+        /* 반원 폭이 240도라 양 끝은 회전해도 화면 밖에 있다.
+           그래서 사그라뜨리지 않는다 — 알갱이가 사라져 보이던 원인이었다.
+           대신 관의 앞뒤(front)로 밝기와 크기를 준다. 앞쪽이 크고 밝다. */
         var ox = apx[i] - tx, oy = apy[i] - ty;
-        var lit = fade * (0.70 + Math.sqrt(ox*ox + oy*oy) / 46 * 0.5);
+        var push2 = Math.sqrt(ox*ox + oy*oy) / 46 * 0.5;
+        var lit, sz;
+        if(ahu[i] === 0){                                  /* 코어 — 또렷한 선 */
+          lit = 0.80 + front * 0.16 + push2;
+          sz  = 2.0 + front * 1.4;
+        }else{                                             /* 감는 가닥 */
+          lit = 0.34 + front * 0.46 + push2;
+          sz  = 1.6 + front * 4.4;
+        }
         if(lit < 0) lit = 0; else if(lit > 1) lit = 1;
-        var ahb = (lit * HEATS) | 0; if(ahb > HEATS - 1) ahb = HEATS - 1;
+        var ahb = (lit * ALV) | 0; if(ahb > ALV - 1) ahb = ALV - 1;
         abk[i] = ahb;
-        arad[i] = (2.5 + own * 4.2) * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
+        arad[i] = sz * asz[i] * (0.9 + 0.1 * Math.sin(t * 1.6 + i));
       }
       aSeeded = true;
 
@@ -1718,16 +1764,17 @@ img,svg{max-width:100%;display:block;}
       var rrot = rotNow === null
                ? (Math.min(1, Math.max(0, window.scrollY / rdoc)) - 0.5) * 2.09
                : rotNow;
+      var RA = W * 0.60;
       for(var k = 0; k < AN; k++){
-        var rr = W * 0.60 * (1 - ab[k] + aj[k]);
+        var phi = aph[k] + au[k] * ACOIL;
+        var front = 0.5 + 0.5 * Math.sin(phi);
+        var rr = RA * (1 + aj[k]) + atb[k] * RA * Math.cos(phi);
         var ra = au[k] + rrot;
         apx[k] = W * 0.5 + Math.cos(ra) * rr;
-        apy[k] = H * 0.5 + W * 0.60 + Math.sin(ra) * rr;
-        var own = 1 - Math.abs(Math.cos(au[k]));
-        var edge = au[k] - PI; if(TAU - au[k] < edge) edge = TAU - au[k];
-        var fade = edge < 0.42 ? edge / 0.42 : 1; if(fade < 0) fade = 0;
-        abk[k] = Math.min(HEATS - 1, ((fade * 0.70) * HEATS) | 0);
-        arad[k] = (2.5 + own * 4.2) * asz[k];
+        apy[k] = H * 0.5 + RA + Math.sin(ra) * rr;
+        var lit = ahu[k] === 0 ? 0.80 + front * 0.16 : 0.34 + front * 0.46;
+        abk[k] = Math.min(ALV - 1, (lit * ALV) | 0);
+        arad[k] = (ahu[k] === 0 ? 2.0 + front * 1.4 : 1.6 + front * 4.4) * asz[k];
       }
       aSeeded = true;
       paint();
