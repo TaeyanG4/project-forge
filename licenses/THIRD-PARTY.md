@@ -22,7 +22,8 @@
 
 ## Alpine.js 3.14.9 — MIT
 
-`site/pallet.html` · `site/mat.html` · `site/stamp.html` · `site/shop.html` 의 화면 전환과 상태 관리. 빌드 도구를 두지 않으려고 인라인했습니다.
+`site/pallet.html` · `site/mat.html` · `site/stamp.html` · `site/shop.html` · `site/guide.html` 의
+화면 전환과 상태 관리. 빌드 도구를 두지 않으려고 인라인했습니다.
 
 - 저작권: Copyright (c) 2019-2025 Caleb Porzio and contributors
 - 원본: https://github.com/alpinejs/alpine
