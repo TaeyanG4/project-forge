@@ -22,7 +22,7 @@
 
 ## Alpine.js 3.14.9 — MIT
 
-`site/pallet.html` 의 화면 전환과 상태 관리. 빌드 도구를 두지 않으려고 인라인했습니다.
+`site/pallet.html` · `site/mat.html` · `site/stamp.html` · `site/shop.html` 의 화면 전환과 상태 관리. 빌드 도구를 두지 않으려고 인라인했습니다.
 
 - 저작권: Copyright (c) 2019-2025 Caleb Porzio and contributors
 - 원본: https://github.com/alpinejs/alpine
@@ -63,3 +63,14 @@ SOFTWARE.
 숫자와 라틴 라벨. 이것만 Google Fonts 에서 불러옵니다(인라인 아님).
 
 - 원본: https://github.com/JetBrains/JetBrainsMono
+
+## 상품 사진 — Pexels License
+
+`site/shop.html` 안에 들어 있는 상품 사진 19장은 [Pexels](https://www.pexels.com) 에서
+받아 크기를 줄이고 WebP 로 다시 구운 것입니다.
+
+- Pexels License: 상업적·비상업적 이용 무료, 출처 표기 의무 없음, 재판매·별도 배포 금지
+- 원문: https://www.pexels.com/license/
+
+> **실제 판매에 쓸 때는 직접 찍은 사진으로 바꾸세요.** 이 사진들은 화면을 보여 주기 위한
+> 자리 채움이고, 사진 속 물건과 데모의 상품 설명은 서로 관계가 없습니다.
