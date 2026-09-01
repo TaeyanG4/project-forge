@@ -5,6 +5,10 @@ name = "fornax-inquiry"
 main = "inquiry.js"
 compatibility_date = "2026-09-01"
 
+# 우리 도메인으로 받는다. workers.dev 는 일부 광고 차단기가 통째로 막는다.
+# api 라는 하위 이름만 새로 생기고, 뿌리 도메인의 A 레코드(웹사이트)는 그대로다.
+routes = [{ pattern = "api.fornaxworks.com", custom_domain = true }]
+
 # 메일 발송 바인딩. 대시보드에서 Email Service 를 추가한 것과 같은 것입니다.
 [[send_email]]
 name = "EMAIL"
