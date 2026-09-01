@@ -188,8 +188,9 @@ pip install fonttools brotli
 ### 공개 전에 바꿔야 하는 것
 
 - [x] `hello@fornaxworks.com` — Cloudflare Email Routing 으로 `taeyang95@naver.com` 에 전달
-- [ ] 사업자 정보 표시 (상호·대표자·사업자등록번호·주소·통신판매업 신고번호)
-- [ ] 개인정보처리방침 — 문의 폼이 이름과 이메일을 수집합니다
+- [x] 개인정보처리방침 — `site/privacy.html`
+- [ ] 사업자 정보 (`biz`) — 채우면 푸터와 개인정보처리방침에 함께 나옵니다.
+      비어 있으면 그 줄이 아예 안 나오므로, 채우기 전에도 화면이 깨지지 않습니다.
 - [x] `og:image` — `site/og.png` (`python og.py` 로 다시 굽습니다)
 - [x] 폼 전송 엔드포인트 — `worker/inquiry.js`
 - [ ] 카카오톡 상담 채널 주소 (`contact.kakao`)

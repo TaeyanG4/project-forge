@@ -31,6 +31,7 @@ jobs:
           mkdir -p _public
           cp site/index.html   _public/
           cp site/gallery.html _public/
+          cp site/privacy.html _public/
           cp site/pallet.html  _public/
           cp site/mat.html     _public/
           cp site/stamp.html   _public/
