@@ -48,7 +48,7 @@ cd site && python publish.py
 
 크롬이나 엣지가 열리면서 편집기가 뜹니다.
 
-1. `사이트 파일 연결` → `site/index.html` 과 `site/gallery.html` 을 고릅니다.
+1. `사이트 파일 연결` → `site/index.html` · `site/gallery.html` · `site/privacy.html` 을 고릅니다.
    한 번만 하면 기억하고, 지금 사이트에 들어 있는 내용을 읽어 옵니다.
 2. 등록해 둔 것은 한 줄로 접혀 있습니다. 고칠 것만 눌러 펼치세요.
    `+ 작업 추가` 를 누르면 새 항목만 펼쳐진 채로 열립니다.
@@ -59,7 +59,8 @@ cd site && python publish.py
    GitHub Actions 가 끝나면 공개된 사이트에 반영됩니다.
 
 `index.html` 과 `gallery.html` 은 같은 데이터를 봐야 목록이 어긋나지 않으므로
-편집기가 항상 두 파일을 동시에 씁니다.
+편집기가 항상 함께 씁니다. `privacy.html` 에는 연락처와 사업자 정보만 들어갑니다 —
+작업 목록까지 실을 이유가 없습니다.
 
 ### publish.py 는 무엇을 하나
 
@@ -126,17 +127,21 @@ GitHub Pages 로 올립니다 (`.github/workflows/pages.yml`).
 Google Fonts 에 없어서 **페이지에 쓰인 글자만 골라 서브셋한 뒤 인라인**했습니다.
 덕분에 외부 요청 없이 뜨지만, 대신 이런 제약이 있습니다.
 
-> **내용을 크게 바꾸면 폰트를 다시 구워야 합니다.**
+> **본문 글자를 바꾸면 폰트를 다시 구워야 합니다.**
 > 서브셋에 없는 글자는 시스템 폰트로 폴백돼 한 문장 안에서 서체가 섞입니다.
-> 현재 `index.html` 기준 한글 603자만 들어 있습니다. 페이지마다 따로 굽습니다.
+> 현재 `index.html` 기준 한글 733자만 들어 있습니다. 페이지마다 따로 굽습니다.
 
-다시 굽는 방법:
+편집기(`admin.html`)로 내용을 고쳤을 때도 마찬가지입니다.
+새로 적은 글자가 서브셋에 없으면 그 글자만 다른 서체로 뜹니다.
 
 ```bash
 pip install fonttools brotli
-# Pretendard 가변 웹폰트를 받아 페이지 문자로 서브셋한 뒤
-# <style> 맨 앞의 @font-face 블록을 교체합니다.
+python bake.py                     # site 의 본문 페이지 전부
+python bake.py site/index.html     # 바꾼 것만
 ```
+
+마지막에 **빠진 한글 0자**가 찍히는지 확인하세요. 0이 아니면 그만큼 폴백됩니다.
+Pretendard 원본(2MB)은 저장소에 넣지 않고, 없으면 `bake.py` 가 한 번 받아 둡니다.
 
 ### 서버가 없습니다
 

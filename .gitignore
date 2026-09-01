@@ -48,6 +48,12 @@ venv/
 Thumbs.db
 desktop.ini
 
+# ── bake.py 가 받아 두는 폰트 원본 ──
+# 2MB 라 저장소에 넣지 않는다. 없으면 bake.py 가 알아서 다시 받는다.
+PretendardVariable.woff2
+.subset.woff2
+.check.woff2
+
 # ── 빌드 산출물 ──
 node_modules/
 dist/
