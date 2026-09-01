@@ -157,7 +157,7 @@ pip install fonttools brotli
 
 ### 공개 전에 바꿔야 하는 것
 
-- [ ] `hello@fornax.studio` → 실제 이메일 (`site-data` 의 `contact.email`)
+- [x] `hello@fornaxworks.com` — Cloudflare Email Routing 으로 `taeyang95@naver.com` 에 전달
 - [ ] 사업자 정보 표시 (상호·대표자·사업자등록번호·주소·통신판매업 신고번호)
 - [ ] 개인정보처리방침 — 문의 폼이 이름과 이메일을 수집합니다
 - [ ] `og:image` — 없으면 링크 공유 시 썸네일이 뜨지 않습니다
