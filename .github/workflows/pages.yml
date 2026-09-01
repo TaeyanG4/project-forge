@@ -40,6 +40,7 @@ jobs:
           cp site/board.html   _public/
           cp site/clerk.html   _public/
           cp site/landing.html _public/
+          cp site/og.png       _public/   # 링크 미리보기 썸네일
           cp site/robots.txt   _public/
           cp site/sitemap.xml  _public/
           cp site/CNAME        _public/   # 없으면 배포마다 커스텀 도메인이 풀린다
