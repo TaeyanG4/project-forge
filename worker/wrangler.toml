@@ -1,0 +1,10 @@
+# 대시보드에 붙여넣기가 안 될 때 쓰는 배포 설정.
+#   npx wrangler login          (브라우저가 열리고 승인하면 됩니다)
+#   npx wrangler deploy         (worker/ 안에서)
+name = "fornax-inquiry"
+main = "inquiry.js"
+compatibility_date = "2026-09-01"
+
+# 메일 발송 바인딩. 대시보드에서 Email Service 를 추가한 것과 같은 것입니다.
+[[send_email]]
+name = "EMAIL"

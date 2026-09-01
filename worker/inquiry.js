@@ -115,8 +115,14 @@ export default {
       esc(msg) +
       "</div>";
 
+    /* 바인딩 이름을 EMAIL 로 두는 걸 권하지만, 대시보드가 SEND_EMAIL 로
+       만들어 주는 경우도 있어 둘 다 받는다 */
+    const mailer = env.EMAIL || env.SEND_EMAIL;
+    if (!mailer)
+      return json({ ok: false, error: "메일 발송 바인딩이 없습니다 (EMAIL)" }, 500, origin);
+
     try {
-      await env.EMAIL.send({
+      await mailer.send({
         to: TO,
         from: FROM,
         replyTo: mail,   /* 네이버에서 답장을 누르면 문의한 사람에게 바로 간다 */
