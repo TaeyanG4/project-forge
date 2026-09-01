@@ -1,6 +1,6 @@
 # project-forge
 
-프리랜스 개발 스튜디오 **FORGE** 의 웹사이트와 제품 데모 모음.
+프리랜스 개발 스튜디오 **Fornax** 의 웹사이트와 제품 데모 모음.
 
 빌드 도구도 패키지 매니저도 쓰지 않습니다. 파일을 브라우저로 열면 그대로 동작하고,
 저장소를 그대로 올리면 그대로 배포됩니다.
@@ -157,7 +157,7 @@ pip install fonttools brotli
 
 ### 공개 전에 바꿔야 하는 것
 
-- [ ] `hello@forge.studio` → 실제 이메일 (`site-data` 의 `contact.email`)
+- [ ] `hello@fornax.studio` → 실제 이메일 (`site-data` 의 `contact.email`)
 - [ ] 사업자 정보 표시 (상호·대표자·사업자등록번호·주소·통신판매업 신고번호)
 - [ ] 개인정보처리방침 — 문의 폼이 이름과 이메일을 수집합니다
 - [ ] `og:image` — 없으면 링크 공유 시 썸네일이 뜨지 않습니다
@@ -183,7 +183,7 @@ pip install fonttools brotli
 
 ## 라이선스
 
-이 저장소의 코드와 디자인에 대한 권리는 저작자에게 있습니다. © FORGE
+이 저장소의 코드와 디자인에 대한 권리는 저작자에게 있습니다. © Fornax
 
 HTML 파일 안에는 Pretendard(OFL 1.1), Alpine.js·Chart.js(MIT)가 함께 들어 있습니다.
 각 라이선스와 고지는 [`licenses/THIRD-PARTY.md`](./licenses/THIRD-PARTY.md) 를 보세요.
