@@ -42,6 +42,7 @@ jobs:
           cp site/landing.html _public/
           cp site/robots.txt   _public/
           cp site/sitemap.xml  _public/
+          cp site/CNAME        _public/   # 없으면 배포마다 커스텀 도메인이 풀린다
           touch _public/.nojekyll
           echo "--- 배포될 파일 ---"
           ls -la _public
