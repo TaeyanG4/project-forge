@@ -15,6 +15,7 @@
 | TAG | `site/shop.html` | 온라인 스토어 데모 — 고객·판매자 양쪽 (작업물 예시) |
 | INDEX | `site/guide.html` | 사내 문서 검색 어시스턴트 데모 (작업물 예시) |
 | BRIDGE | `site/bridge.html` | 레거시 무중단 이관 상황판 데모 (작업물 예시) |
+| TALLY | `site/board.html` | 지표 대시보드와 수집 파이프라인 데모 (작업물 예시) |
 
 편집 도구는 따로입니다. `site/publish.py` 가 편집기를 띄우고 공개까지 맡습니다.
 `site/admin.html` 은 저장소에 없습니다 (아래 참고).

@@ -37,6 +37,7 @@ jobs:
           cp site/shop.html    _public/
           cp site/guide.html   _public/
           cp site/bridge.html  _public/
+          cp site/board.html   _public/
           cp site/robots.txt   _public/
           cp site/sitemap.xml  _public/
           touch _public/.nojekyll
