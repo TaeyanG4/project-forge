@@ -21,7 +21,7 @@ SRC  = os.path.join(HERE, "PretendardVariable.woff2")
 URL  = ("https://github.com/orioncactus/pretendard/raw/main/"
         "packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2")
 
-DEFAULT = ["site/index.html", "site/gallery.html", "site/privacy.html"]
+DEFAULT = ["site/index.html", "site/gallery.html", "site/privacy.html", "site/404.html"]
 
 PAT = re.compile(r"(src:url\((?:data:font/woff2;base64,)?)"
                  r"((?:__FONT_DATA__)|(?:[A-Za-z0-9+/=]+))(\))")

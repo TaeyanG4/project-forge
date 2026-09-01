@@ -32,6 +32,7 @@ jobs:
           cp site/index.html   _public/
           cp site/gallery.html _public/
           cp site/privacy.html _public/
+          cp site/404.html     _public/   # 없는 주소. 없으면 깃허브 기본 화면이 뜬다
           cp site/pallet.html  _public/
           cp site/mat.html     _public/
           cp site/stamp.html   _public/
