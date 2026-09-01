@@ -1,4 +1,21 @@
 User-agent: *
 Allow: /
 
+# 답변형 검색(생성형 AI)도 막지 않는다. 어차피 위의 * 에 포함되지만,
+# 나중에 누가 전체를 막을 때 이 줄들이 남아 있으면 결정을 되짚어 보게 된다.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://fornaxworks.com/sitemap.xml
