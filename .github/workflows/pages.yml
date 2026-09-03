@@ -42,6 +42,8 @@ jobs:
           cp site/board.html   _public/
           cp site/clerk.html   _public/
           cp site/landing.html _public/
+          cp site/drive.html   _public/
+          cp site/crawl.html   _public/
           cp site/og.png       _public/   # 링크 미리보기 썸네일
           cp site/robots.txt   _public/
           cp site/llms.txt     _public/   # 답변형 검색이 읽는 요약
